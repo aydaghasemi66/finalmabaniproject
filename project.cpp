@@ -71,7 +71,7 @@ void score() {
     cout << "Enter student ID: ";
     cin >> stu_id;
     cout << "Enter your full name: ";
-    getline(cin >> ws, stu_name);  // استفاده از ws برای جلوگیری از مشکلات فضای خالی بعد از cin
+    getline(cin >> ws, stu_name);
     cout << "Number of courses: ";
     cin >> course;
 
@@ -91,7 +91,6 @@ void score() {
         units += unit;
         sumcourse += unit * score;
 
-        // ساخت رشته جزئیات دوره‌ها
         courses_details += "Course: " + coursename + ", Credits: " + to_string(unit) + ", Grade: " + to_string(score) + "\n";
     }
 
@@ -128,7 +127,7 @@ void show_student_by_id() {
             if (line.find("Student ID: " + id) != string::npos) {
                 found = true;
                 cout << line << endl;
-                for (int i = 0; i < 4; ++i) { // فرض شده هر دانشجو 4 خط دارد
+                for (int i = 0; i < 4; ++i) {
                     getline(file, line);
                     cout << line << endl;
                 }
@@ -149,8 +148,8 @@ void show_student_by_id() {
 void show_student_by_name() {
     string name, line;
     cout << "Enter the student's name: ";
-    cin.ignore();  // فضای اضافی قبل از وارد کردن نام را حذف می‌کند
-    getline(cin, name);  // دریافت نام دانشجو
+    cin.ignore();
+    getline(cin, name);
 
     ifstream file("students.txt");
     bool found = false;
@@ -160,14 +159,13 @@ void show_student_by_name() {
             if (line.find("Student Name: " + name) != string::npos) {
                 found = true;
                 cout << "Student details:" << endl;
-                cout << line << endl; // نمایش نام دانشجو
+                cout << line << endl;
 
-                // نمایش خطوط بعدی مربوط به دانشجو تا رسیدن به جداکننده
                 while (getline(file, line) && line != "------") {
                     cout << line << endl;
                 }
-                cout << "------" << endl; // جداکننده را هم نمایش می‌دهیم
-                break; // جستجو متوقف می‌شود چون نام پیدا شده است
+                cout << "------" << endl;
+                break;
             }
         }
         file.close();
@@ -186,8 +184,8 @@ void delete_student_by_id() {
     cout << "Enter student ID to delete: ";
     cin >> stu_id;
 
-    string students[100]; // آرایه برای ذخیره خطوط فایل
-    int count = 0;        // تعداد خطوط در آرایه
+    string students[100];
+    int count = 0;
 
     ifstream file("students.txt");
     if (!file.is_open()) {
@@ -197,13 +195,11 @@ void delete_student_by_id() {
 
     bool found = false;
     while (getline(file, line)) {
-        // اگر خط حاوی ID مورد نظر نباشد، به آرایه اضافه کن
         if (line.find("Student ID: " + stu_id) != string::npos) {
             found = true;
-            // پرش به خط بعدی تا رسیدن به جداکننده
             while (getline(file, line) && line != "------");
         } else {
-            students[count++] = line; // ذخیره خطوط در آرایه
+            students[count++] = line;
         }
     }
     file.close();
@@ -213,7 +209,6 @@ void delete_student_by_id() {
         return;
     }
 
-    // بازنویسی فایل با خطوط باقی‌مانده
     ofstream outfile("students.txt");
     for (int i = 0; i < count; i++) {
         outfile << students[i] << endl;
@@ -221,20 +216,21 @@ void delete_student_by_id() {
     outfile.close();
     cout << "Student with ID " << stu_id << " deleted successfully!" << endl;
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 void delete_student_by_name() {
     string stu_name, line;
     cout << "Enter student name to delete: ";
-    cin.ignore();  // Clear the input buffer to handle previous `cin` properly
-    getline(cin, stu_name);  // Get the full name of the student
+    cin.ignore();
+    getline(cin, stu_name);
 
     if (stu_name.empty()) {
         cout << "No name entered!" << endl;
         return;
     }
 
-    string students[100]; // Array to store file lines
-    int count = 0;        // Number of lines in the array
+    string students[100];
+    int count = 0;
 
     ifstream file("students.txt");
     if (!file.is_open()) {
@@ -243,23 +239,20 @@ void delete_student_by_name() {
     }
 
     bool found = false;
-    bool delete_student = false; // Flag to indicate whether we should delete a student
+    bool delete_student = false;
 
     while (getline(file, line)) {
-        // If line contains student name, delete the entire student info
         if (line.find("Student Name: " + stu_name) != string::npos) {
             found = true;
-            delete_student = true; // Start deleting after finding the student
+            delete_student = true;
 
-            // Skip all lines until we find the "------" separator
             while (getline(file, line) && line != "------");
         } else {
             if (!delete_student) {
-                students[count++] = line; // Store the line if we haven't found the student yet
+                students[count++] = line;
             } else {
-                // If we are deleting, skip lines until the "------" separator
                 if (line == "------") {
-                    delete_student = false; // Stop deleting after encountering the separator
+                    delete_student = false;
                 }
             }
         }
@@ -271,7 +264,6 @@ void delete_student_by_name() {
         return;
     }
 
-    // Rewrite the file with the remaining lines
     ofstream outfile("students.txt");
     for (int i = 0; i < count; i++) {
         outfile << students[i] << endl;
